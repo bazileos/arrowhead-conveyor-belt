@@ -18,4 +18,8 @@ In order to set up the Arrowhead adapter for your conveyor belt please refer to 
 
 ### *transport-with-conveyor*
 
+Moves the conveyor belt from its current position to a given distance. This service accepts a **signed-distance** parameter (as a GET parameter of its REST endpoint) that specifies the aforementioned distance in millimeters along with the direction of movement. A positive value means a forward direction (when the belt is moving away from the motor). A negative value means a backwards direction (when the belt is moving towards the motor).
+
 ### *transport-with-conveyor-end-to-end*
+
+
