@@ -23,3 +23,7 @@ Moves the conveyor belt from its current position to a given distance. This serv
 ### *transport-with-conveyor-end-to-end*
 
 Moves the belt with an entire length of the conveyor. This service accepts a `direction` parameter (as a GET parameter of its REST endpoint) that specifies the direction of the movement. The value of this parameter can be either `forward` or `backwards`. (The meanings of these directions are mentioned above.)
+
+## Notes
+
+* Don't forget to modify the `shaftRadius` variable with your conveyor shaft radius in order to accurately calculate the movement distances.
