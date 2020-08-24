@@ -14,6 +14,10 @@
 #define DIR_PIN 14
 #define SERVER_PORT 8080 
 
+// speficy shaft radius here (in millimeters) to accurately calculate the movement distance of the belt
+int shaftRadius = 6;
+float transRatio = 0.0314*shaftRadius;
+
 // NTP
 const long utcOffsetInSeconds = 3600;
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -49,7 +53,7 @@ void handleTransportWithConveyor() {
   else digitalWrite(DIR_PIN,HIGH);
 
   // calculate number of pulses
-  int pulseNum = round(abs(signedDistance)/0.1885);
+  int pulseNum = round(abs(signedDistance)/transRatio);
   Serial.print("Number of pulses: ");
   Serial.println(pulseNum);
 
