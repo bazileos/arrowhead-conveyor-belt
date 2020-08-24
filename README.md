@@ -12,7 +12,7 @@ In order to compile this program (e.g. in Arduino IDE), you will need the follow
 
 ## Arrowhead configuration
 
-In order to set up the Arrowhead adapter for your conveyor belt please refer to the documentation found in [this repository](https://github.com/bazileos/adapter-quick-demo-dev)
+In order to set up the Arrowhead adapter for your conveyor belt please refer to the documentation found in [this repository](https://github.com/arrowhead-f/adapter-quick-demo-dev)
 
 ## Services
 
