@@ -12,7 +12,7 @@ In order to compile this program (e.g. in Arduino IDE), you will need the follow
 
 ## Arrowhead configuration
 
-In order to set up the Arrowhead adapter for your conveyor belt please refer to the documentation found in [this repository](https://github.com/bazileos/adapter-quick-demo-dev)
+In order to set up the Arrowhead adapter for your conveyor belt please refer to the documentation found in [this repository](https://github.com/arrowhead-f/adapter-quick-demo-dev)
 
 ## Services
 
@@ -23,3 +23,7 @@ Moves the conveyor belt from its current position to a given distance. This serv
 ### *transport-with-conveyor-end-to-end*
 
 Moves the belt with an entire length of the conveyor. This service accepts a `direction` parameter (as a GET parameter of its REST endpoint) that specifies the direction of the movement. The value of this parameter can be either `forward` or `backwards`. (The meanings of these directions are mentioned above.)
+
+## Notes
+
+* Don't forget to modify the `shaftRadius` variable with your conveyor shaft radius in order to accurately calculate the movement distances.
