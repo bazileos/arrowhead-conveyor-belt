@@ -29,6 +29,16 @@ unsigned long epochTime = 0;
 
 ArrowheadESP Arrowhead;
 
+void sendErrorResponse(String message) {
+  StaticJsonDocument<150> root;
+  String response;
+  root["status"] = "error";
+  root["message"] = message;
+  root["timestamp"] = epochTime;
+  serializeJson(root, response);
+  Arrowhead.getWebServer().send(400, "application/json", response); // return with error response
+}
+
 void handleTransportWithConveyor() {
   
   int signedDistance = 0;
@@ -75,6 +85,71 @@ void handleTransportWithConveyor() {
   
 }
 
+void handleTransportWithConveyorPlus100() {
+  
+  int signedDistance = 100;
+
+  // MOVE BELT
+
+  // set direction
+  if(signedDistance > 0) digitalWrite(DIR_PIN,LOW);
+  else digitalWrite(DIR_PIN,HIGH);
+
+  // calculate number of pulses
+  int pulseNum = round(abs(signedDistance)/transRatio);
+  Serial.print("Number of pulses: ");
+  Serial.println(pulseNum);
+
+  // make pulses
+  for(int i = 0; i < pulseNum; i++) {
+    digitalWrite(STEP_PIN,HIGH); 
+    delay(2); 
+    digitalWrite(STEP_PIN,LOW); 
+    delay(2);
+  }
+
+  // return with success
+  StaticJsonDocument<150> root;
+  String response;
+  root["status"] = "success";
+  root["timestamp"] = epochTime;
+  serializeJson(root, response);
+  Arrowhead.getWebServer().send(200, "application/json", response);
+}
+
+void handleTransportWithConveyorMinus100() {
+  
+  int signedDistance = -100;
+
+  // MOVE BELT
+
+  // set direction
+  if(signedDistance > 0) digitalWrite(DIR_PIN,LOW);
+  else digitalWrite(DIR_PIN,HIGH);
+
+  // calculate number of pulses
+  int pulseNum = round(abs(signedDistance)/transRatio);
+  Serial.print("Number of pulses: ");
+  Serial.println(pulseNum);
+
+  // make pulses
+  for(int i = 0; i < pulseNum; i++) {
+    digitalWrite(STEP_PIN,HIGH); 
+    delay(2); 
+    digitalWrite(STEP_PIN,LOW); 
+    delay(2);
+  }
+
+  // return with success
+  StaticJsonDocument<150> root;
+  String response;
+  root["status"] = "success";
+  root["timestamp"] = epochTime;
+  serializeJson(root, response);
+  Arrowhead.getWebServer().send(200, "application/json", response);
+}
+  
+
 void handleTransportWithConveyorEndToEnd() {
 
   String beltDirection = Arrowhead.getWebServer().arg("direction");
@@ -105,16 +180,6 @@ void handleTransportWithConveyorEndToEnd() {
   root["timestamp"] = epochTime;
   serializeJson(root, response);
   Arrowhead.getWebServer().send(200, "application/json", response);
-}
-
-void sendErrorResponse(String message) {
-  StaticJsonDocument<150> root;
-  String response;
-  root["status"] = "error";
-  root["message"] = message;
-  root["timestamp"] = epochTime;
-  serializeJson(root, response);
-  Arrowhead.getWebServer().send(400, "application/json", response); // return with error response
 }
 
 void setup() {
@@ -148,6 +213,9 @@ void setup() {
 
     String serviceRegistryEntry1 = "{\"endOfValidity\":\"2021-12-05 12:00:00\",\"interfaces\":[\"HTTP-INSECURE-JSON\"],\"providerSystem\":{\"address\":\" "+ Arrowhead.getIP() +"\",\"authenticationInfo\":\""+ Arrowhead.getArrowheadESPFS().getSSLInfo().publicKey +"\",\"port\":"+ SERVER_PORT +",\"systemName\":\""+ Arrowhead.getArrowheadESPFS().getProviderInfo().systemName +"\"},\"serviceDefinition\":\"transport-with-conveyor\",\"serviceUri\":\"/transport-with-conveyor\",\"version\":1}";
     String serviceRegistryEntry2 = "{\"endOfValidity\":\"2021-12-05 12:00:00\",\"interfaces\":[\"HTTP-INSECURE-JSON\"],\"providerSystem\":{\"address\":\" "+ Arrowhead.getIP() +"\",\"authenticationInfo\":\""+ Arrowhead.getArrowheadESPFS().getSSLInfo().publicKey +"\",\"port\":"+ SERVER_PORT +",\"systemName\":\""+ Arrowhead.getArrowheadESPFS().getProviderInfo().systemName +"\"},\"serviceDefinition\":\"transport-with-conveyor-end-to-end\",\"serviceUri\":\"/transport-with-conveyor-end-to-end\",\"version\":1}";  
+    String serviceRegistryEntry3 = "{\"endOfValidity\":\"2021-12-05 12:00:00\",\"interfaces\":[\"HTTP-INSECURE-JSON\"],\"providerSystem\":{\"address\":\" "+ Arrowhead.getIP() +"\",\"authenticationInfo\":\""+ Arrowhead.getArrowheadESPFS().getSSLInfo().publicKey +"\",\"port\":"+ SERVER_PORT +",\"systemName\":\""+ Arrowhead.getArrowheadESPFS().getProviderInfo().systemName +"\"},\"serviceDefinition\":\"transport-with-conveyor-plus-100mm\",\"serviceUri\":\"/transport-with-conveyor-plus-100mm\",\"version\":1}";
+    String serviceRegistryEntry4 = "{\"endOfValidity\":\"2021-12-05 12:00:00\",\"interfaces\":[\"HTTP-INSECURE-JSON\"],\"providerSystem\":{\"address\":\" "+ Arrowhead.getIP() +"\",\"authenticationInfo\":\""+ Arrowhead.getArrowheadESPFS().getSSLInfo().publicKey +"\",\"port\":"+ SERVER_PORT +",\"systemName\":\""+ Arrowhead.getArrowheadESPFS().getProviderInfo().systemName +"\"},\"serviceDefinition\":\"transport-with-conveyor-minus-100mm\",\"serviceUri\":\"/transport-with-conveyor-minus-100mm\",\"version\":1}";  
+  
 
     response = "";
 
@@ -164,10 +232,26 @@ void setup() {
     Serial.println(statusCode);
     Serial.print("Response body from server: ");
     Serial.println(response);
+
+    // register transport-with-conveyor-plus-100mm service
+    statusCode = Arrowhead.serviceRegistryRegister(serviceRegistryEntry3.c_str(), &response);
+    Serial.print("Status code from server: ");
+    Serial.println(statusCode);
+    Serial.print("Response body from server: ");
+    Serial.println(response);
+
+    // register transport-with-conveyor-minus-100mm service
+    statusCode = Arrowhead.serviceRegistryRegister(serviceRegistryEntry4.c_str(), &response);
+    Serial.print("Status code from server: ");
+    Serial.println(statusCode);
+    Serial.print("Response body from server: ");
+    Serial.println(response);
   }
 
   Arrowhead.getWebServer().on("/transport-with-conveyor", handleTransportWithConveyor);
   Arrowhead.getWebServer().on("/transport-with-conveyor-end-to-end", handleTransportWithConveyorEndToEnd);
+  Arrowhead.getWebServer().on("/transport-with-conveyor-plus-100mm", handleTransportWithConveyorPlus100);
+  Arrowhead.getWebServer().on("/transport-with-conveyor-minus-100mm", handleTransportWithConveyorMinus100);
   Arrowhead.getWebServer().begin(SERVER_PORT);
 
   timeClient.begin();
